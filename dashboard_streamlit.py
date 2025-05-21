@@ -8,7 +8,6 @@ from io import StringIO
 import requests
 
 st.set_page_config(page_title="Dashboard de Ventas", layout="wide")
-
 st.title("📊 Dashboard Interactivo - Ventas de Tiendas de Conveniencia")
 
 archivo = st.file_uploader("📤 Sube tu archivo CSV (opcional, debe contener columnas como 'Date', 'Total', etc.)", type="csv")
@@ -44,7 +43,7 @@ ventas_diarias.plot(ax=ax1)
 ax1.set_title("Ventas Diarias")
 st.pyplot(fig1)
 
-# Gráfico 2: Boxplot
+# Gráfico 2: Distribución por producto
 st.subheader("📦 Distribución por Línea de Producto")
 fig2, ax2 = plt.subplots(figsize=(10,5))
 sns.boxplot(data=df_filtrado, x='Product line', y='Total', ax=ax2)
@@ -63,7 +62,7 @@ fig4, ax4 = plt.subplots()
 sns.heatmap(df_filtrado[['Unit price', 'Quantity', 'Total', 'gross income', 'Rating']].corr(), annot=True, cmap='coolwarm', ax=ax4)
 st.pyplot(fig4)
 
-# Gráfico 5: 3D interactivo
+# Gráfico 5: Visualización 3D
 st.subheader("🔮 Visualización 3D Interactiva")
 fig5 = px.scatter_3d(df_filtrado, x='fecha_num', y='Quantity', z='Total', color='Product line', title='Ventas 3D')
 st.plotly_chart(fig5)
@@ -75,7 +74,18 @@ fig6, ax6 = plt.subplots()
 sns.lineplot(data=df_sorted, x="Rating", y="Total", marker="o", color="blue", ax=ax6)
 ax6.set_title("Relación entre Rating y Total de Ventas")
 st.pyplot(fig6)
-# Gráfico 3D
-st.subheader("🔮 Visualización 3D Interactiva")
-fig5 = px.scatter_3d(df_filtrado, x='fecha_num', y='Quantity', z='Total', color='Product line', title='Ventas 3D')
-st.plotly_chart(fig5)
+
+# Gráfico 7: Compuesto (barras + línea promedio móvil)
+st.subheader("📊 Ventas diarias + Promedio móvil (7 días)")
+fig7, ax7 = plt.subplots(figsize=(12, 5))
+ventas_diarias.plot(kind='bar', alpha=0.5, ax=ax7, label='Ventas Diarias')
+ventas_diarias.rolling(7).mean().plot(ax=ax7, color='red', linewidth=2, label='Promedio Móvil 7d')
+ax7.set_title("Ventas diarias con promedio móvil")
+ax7.legend()
+st.pyplot(fig7)
+
+# Gráfico 8: Pairplot multivariado
+st.subheader("🔀 Análisis Multivariado")
+st.info("Este gráfico puede demorar unos segundos. Muestra relaciones entre múltiples variables.")
+fig8 = sns.pairplot(df_filtrado[['Unit price', 'Quantity', 'Total', 'Rating']])
+st.pyplot(fig8)
